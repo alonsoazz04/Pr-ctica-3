@@ -2,10 +2,10 @@
 #include <vector>
 #include <thread>
 
-#include "lector_fichero.h"
-#include "creador_fragmentos.h"
-#include "worker_buscador.h"
-#include "estructura.h"
+#include "lector_fichero.hpp"
+#include "creador_fragmentos.hpp"
+#include "worker_buscador.hpp"
+#include "estructura.hpp"
 
 int main(int argc, char* argv[]) {
     

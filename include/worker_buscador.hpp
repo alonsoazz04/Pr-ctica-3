@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
-#include "estructura.h"
+#include "estructura.hpp"
 
 class WorkerBuscador {
     public:

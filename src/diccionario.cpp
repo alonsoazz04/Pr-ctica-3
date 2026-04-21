@@ -1,4 +1,4 @@
-#include "diccionario.h"
+#include "diccionario.hpp"
 #include <iostream>
 #include <random>
 

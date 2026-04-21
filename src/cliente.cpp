@@ -1,4 +1,4 @@
-#include "cliente.h"
+#include "cliente.hpp"
 #include <iostream>
 
 Cliente::Cliente(int id, const std::string& palabra, TipoCliente tipo, int saldo, int limitePalabras)

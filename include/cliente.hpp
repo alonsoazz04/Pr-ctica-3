@@ -1,7 +1,7 @@
 #pragma once 
 
 #include <string>
-#include "tipo_cliente.h"
+#include "tipo_cliente.hpp"
 
 class Cliente {
     private:

@@ -2,7 +2,7 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
-#include "lector_fichero.h"
+#include "lector_fichero.hpp"
 
 
 std::vector<std::string> LectorFichero::leerLineas(const std::string& nombreFichero) {

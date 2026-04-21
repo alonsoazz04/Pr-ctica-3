@@ -1,6 +1,6 @@
 #include <vector>
 #include <string>
-#include "estructura.h"
+#include "estructura.hpp"
 
 class CreadorFragmentos {
 public:

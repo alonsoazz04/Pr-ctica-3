@@ -1,7 +1,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
-#include "estructura.h"
+#include "estructura.hpp"
 
 class ProcesadorLinea {
     public:

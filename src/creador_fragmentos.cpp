@@ -1,4 +1,4 @@
-#include "creador_fragmentos.h"
+#include "creador_fragmentos.hpp"
 
 
 std::vector<Buscador> CreadorFragmentos::crear(int totalLineas, int numHilos, const std::string& palabra) {

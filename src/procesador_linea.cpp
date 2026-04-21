@@ -1,7 +1,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
-#include "procesador_linea.h"
+#include "procesador_linea.hpp"
 
 std::vector<std::string> ProcesadorLinea::tokenizar(const std::string& linea) {
     std::istringstream iss(linea);

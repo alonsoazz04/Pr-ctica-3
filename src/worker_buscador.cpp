@@ -1,5 +1,5 @@
-#include "worker_buscador.h"
-#include "procesador_linea.h"
+#include "worker_buscador.hpp"
+#include "procesador_linea.hpp"
 
 
 void WorkerBuscador::ejecutar(Buscador local, const std::vector<std::string>& lineas, ResultadosGlobales& globales) {
