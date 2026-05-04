@@ -23,7 +23,12 @@ class Cliente {
         bool esPremiumLimite() const;
         bool esPremiumIlimitado() const;
 
+        bool hasSaldo() const;
+
+        void setPalabra(const std::string& nuevaPalabra);
         void setSaldo(int nuevoSaldo);
+        void setLimitePalabras(int nuevoLimite);
+        
         void incrementarSaldo(int cantidad);
         void consumirCredito();
 

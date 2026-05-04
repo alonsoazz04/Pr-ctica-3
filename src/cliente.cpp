@@ -32,8 +32,20 @@ bool Cliente::esPremiumIlimitado() const {
     return tipo == TipoCliente::PREMIUM_ILIMITADO;
 }
 
+bool Cliente::hasSaldo() const {
+    return saldo > 0;
+}
+
+void Cliente::setPalabra(const std::string& nuevaPalabra) {
+    palabra = nuevaPalabra;
+}
+
 void Cliente::setSaldo(int nuevoSaldo) {
     saldo = nuevoSaldo;
+}
+
+void Cliente::setLimitePalabras(int nuevoLimite) {
+    limitePalabras = nuevoLimite;
 }
 
 void Cliente::incrementarSaldo(int cantidad) {
