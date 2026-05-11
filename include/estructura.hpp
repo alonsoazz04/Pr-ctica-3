@@ -6,6 +6,7 @@
 #include <iostream>
 
 struct ResultadoBusqueda {
+    std::string libro;
     int linea;
     std::string palabraAnterior;
     std::string palabra;
@@ -13,9 +14,9 @@ struct ResultadoBusqueda {
 };
 
 struct Buscador {
-    int id;
-    int inicio;
-    int fin;
+    int idCliente;
+    int idWorker;
+    std::string libro;
     std::string palabra;
     std::vector<ResultadoBusqueda> resultados;
 };
@@ -32,7 +33,7 @@ struct ResultadosGlobales {
 
 inline void publish(ResultadosGlobales& s, Buscador local) {
     std::lock_guard<std::mutex> lk(s.mtx);
-    int idx = local.id - 1;
+    int idx = local.idWorker - 1;
     s.porHilo[idx] = std::move(local);
     s.listo[idx] = true;
 
@@ -48,10 +49,10 @@ inline void printOrdered(ResultadosGlobales& s, int n) {
         lk.unlock();
 
         for (const auto& r : b.resultados) {
-            std::cout << "Hilo " << b.id
-                      << " inicio " << b.inicio
-                        << " fin " << b.fin
-                        << " línea " << r.linea << " "
+            std::cout << "Cliente " << b.idCliente
+                      << " | Worker  " << b.idWorker
+                        << " | Libro " << b.libro
+                        << " | Línea " << r.linea << " "
                         << r.palabraAnterior << " "
                         << r.palabra << " "
                         << r.palabraSiguiente << std::endl;
