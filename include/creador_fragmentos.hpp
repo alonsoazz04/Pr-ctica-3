@@ -4,5 +4,5 @@
 
 class CreadorFragmentos {
 public:
-    static std::vector<Buscador> crear(int totalLineas, int numHilos, const std::string& palabra);
+    static std::vector<Buscador> crear(int idCliente, const std::vector<std::string>& nombreLibros, const std::string& palabra);
 };

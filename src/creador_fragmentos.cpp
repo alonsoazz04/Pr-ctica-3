@@ -1,32 +1,21 @@
 #include "creador_fragmentos.hpp"
 
+std::vector<Buscador> CreadorFragmentos::crear(
+    int idCliente,
+    const std::vector<std::string>& nombresLibros,
+    const std::string& palabra
+) {
+    std::vector<Buscador> tareas;
 
-std::vector<Buscador> CreadorFragmentos::crear(int totalLineas, int numHilos, const std::string& palabra) {
-    std::vector<Buscador> fragmentos;
+    for (std::size_t i = 0; i < nombresLibros.size(); ++i) {
+        Buscador tarea;
+        tarea.idCliente = idCliente;
+        tarea.idWorker = static_cast<int>(i + 1);
+        tarea.libro = nombresLibros[i];
+        tarea.palabra = palabra;
 
-    int tamBase = totalLineas / numHilos;
-    int resto = totalLineas % numHilos;
-
-    int inicio = 0;
-
-    for (int i = 0; i < numHilos; ++i) {
-        int tam = tamBase;
-        if (i == numHilos - 1) {
-            tam += resto;
-        }
-
-        int fin = inicio + tam - 1;
-
-        Buscador b;
-        b.id = i + 1;
-        b.inicio = inicio;
-        b.fin = fin;
-        b.palabra = palabra;
-
-        fragmentos.push_back(b);
-
-        inicio = fin + 1;
+        tareas.push_back(tarea);
     }
 
-    return fragmentos;
+    return tareas;
 }
