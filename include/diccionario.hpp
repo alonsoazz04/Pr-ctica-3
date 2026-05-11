@@ -13,7 +13,7 @@ class Diccionario {
         const std::vector<std::string>& getPalabras() const;
 
         bool vacio() const;
-        void aniadirPalabra(std::string& palabra);
+        void aniadirPalabra(const std::string& palabra);
         std::string getPalabraAleatoria() const;
 
 };

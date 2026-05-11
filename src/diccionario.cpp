@@ -12,7 +12,7 @@ bool Diccionario::vacio() const {
     return palabras.empty();
 }
 
-void Diccionario::aniadirPalabra(std::string& palabra) {
+void Diccionario::aniadirPalabra(const std::string& palabra) {
     palabras.push_back(palabra);
 
 }
