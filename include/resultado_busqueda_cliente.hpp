@@ -8,6 +8,8 @@ struct Busqueda {
     std::string nombreLibro;
     int numeroLinea;
     int posicionPalabra;
+
+        Busqueda(const std::string& nombreLibro, int numeroLinea, int posicionPalabra) : nombreLibro(nombreLibro), numeroLinea(numeroLinea), posicionPalabra(posicionPalabra) {}
 };
 
 class ResultadoBusquedaCliente {

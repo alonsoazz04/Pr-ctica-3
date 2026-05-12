@@ -5,6 +5,7 @@
 #include <atomic>
 #include "cliente.hpp"
 #include "resultado_busqueda_cliente.hpp"
+#include "servicio_pago.hpp"
 
 struct Libro {
     std::string nombre;
@@ -18,5 +19,5 @@ private:
 public:
     explicit BuscadorLibros(const std::vector<Libro>& libros);
 
-    ResultadoBusquedaCliente buscar(const Cliente& cliente) const;
+    ResultadoBusquedaCliente buscar(Cliente& cliente, ServicioPago& servicioPago) const;
 };

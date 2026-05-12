@@ -2,8 +2,8 @@
 #include <iostream>
 #include <chrono>
 
-ServidorBusqueda::ServidorBusqueda(unsigned int maxClientesConcurrente) : maxClientesConcurrente(maxClientesConcurrente), clientesActivos(0), pararPeticion(false),
-contadorTurnoPremium(0), contadorTurnoGratis(0) {}
+ServidorBusqueda::ServidorBusqueda(unsigned int maxClientesConcurrente, const std::vector<Libro>& libros) : maxClientesConcurrente(maxClientesConcurrente), clientesActivos(0), pararPeticion(false),
+contadorTurnoPremium(0), contadorTurnoGratis(0), buscador(libros) {}
 
 bool ServidorBusqueda::hayClientesPendientes() const {
     return !colaGratis.empty() || !colaPremium.empty();
@@ -16,24 +16,24 @@ bool ServidorBusqueda::escogerPremium() const {
     if (contadorTurnoPremium < CUOTA_PREMIUM) {
         return true;
     }
+    if (contadorTurnoGratis < CUOTA_GRATIS) {
+        return false;
+    }
     return false;
 }
 
-void ServidorBusqueda::actualizarContadoresTurno(bool escogerPremium) {
-    if (escogerPremium) {
+void ServidorBusqueda::actualizarContadoresTurno(bool premium) {
+    if (premium) {
         ++contadorTurnoPremium;
-        if (contadorTurnoPremium >= CUOTA_PREMIUM && contadorTurnoGratis >= CUOTA_GRATIS) {
-            contadorTurnoPremium = 0;
-            contadorTurnoGratis = 0;
-        }
     } else {
         ++contadorTurnoGratis;
-        if (contadorTurnoPremium >= CUOTA_PREMIUM && contadorTurnoGratis >= CUOTA_GRATIS) {
-            contadorTurnoPremium = 0;
-            contadorTurnoGratis = 0;
-        }
     }
 
+    if (contadorTurnoPremium >= CUOTA_PREMIUM &&
+        contadorTurnoGratis >= CUOTA_GRATIS) {
+        contadorTurnoPremium = 0;
+        contadorTurnoGratis = 0;
+    }
 }
 
 void ServidorBusqueda::enviarCliente(const Cliente& cliente) {
@@ -48,60 +48,54 @@ void ServidorBusqueda::enviarCliente(const Cliente& cliente) {
     cola_cv.notify_one();
 }
 
-Cliente ServidorBusqueda::getSiguienteCliente() {
-    Cliente cliente(0, "", TipoCliente::GRATIS);
-
-    if (!colaPremium.empty()) {
-        cliente = colaPremium.front();
-        colaPremium.pop_front();
-    } else if (!colaGratis.empty()) {
-        cliente = colaGratis.front();
-        colaGratis.pop_front();
-    }
-
-    return cliente;
-
-}
-
 void ServidorBusqueda::procesarCliente(Cliente cliente) {
+    ResultadoBusquedaCliente resultado = buscador.buscar(cliente, servicioPago);
 
+    std::cout << "Cliente " << cliente.getId()
+              << " buscando palabra: " << cliente.getPalabra() << "\n";
+
+    resultado.print();
+
+    std::cout << "Finalizado cliente " << cliente.getId() << "\n";
 }
 
 void ServidorBusqueda::ejecutar() {
-    while(true) {
+    while (true) {
         Cliente cliente(0, "", TipoCliente::GRATIS);
 
-        {
-            std::unique_lock<std::mutex> lock(colaMutex);
-            cola_cv.wait(lock, [this] { return pararPeticion || hayClientesPendientes();});
+        std::unique_lock<std::mutex> lock(colaMutex);
+        cola_cv.wait(lock, [this] {
+            return pararPeticion || hayClientesPendientes();
+        });
 
-            if (pararPeticion && !hayClientesPendientes()) {
-                break;
-            }
-
-            active_cv.wait(lock, [this] { return clientesActivos < maxClientesConcurrente;});
-
-            if (!colaPremium.empty()) {
-                cliente = colaPremium.front();
-                colaPremium.pop_front();
-            } else if (!colaGratis.empty()) {
-                cliente = colaGratis.front();
-                colaGratis.pop_front();
-            }
-
-            ++clientesActivos;
+        if (pararPeticion && !hayClientesPendientes()) {
+            break;
         }
 
-        std::thread([this, cliente]() {
+        active_cv.wait(lock, [this] {
+            return clientesActivos < maxClientesConcurrente;
+        });
+
+        bool premium = escogerPremium();
+
+        if (premium) {
+            cliente = colaPremium.front();
+            colaPremium.pop_front();
+        } else {
+            cliente = colaGratis.front();
+            colaGratis.pop_front();
+        }
+
+        actualizarContadoresTurno(premium);
+        ++clientesActivos;
+
+        lock.unlock();
+
+        std::thread([this, cliente]() mutable {
             procesarCliente(cliente);
 
-            {
-                std::lock_guard<std::mutex> lock(activeMutex);
-                if (clientesActivos > 0) {
-                    --clientesActivos;
-                }
-            }
-
+            std::lock_guard<std::mutex> guard(colaMutex);
+            --clientesActivos;
             active_cv.notify_one();
             cola_cv.notify_one();
         }).detach();

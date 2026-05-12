@@ -18,6 +18,7 @@ class Cliente {
         const std::string& getPalabra() const;
         int getSaldo() const;
         int getLimitePalabras() const;
+        TipoCliente getTipoCliente() const;
 
         bool esGratis() const;
         bool esPremiumLimite() const;

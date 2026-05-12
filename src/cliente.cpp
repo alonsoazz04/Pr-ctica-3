@@ -20,6 +20,10 @@ int Cliente::getLimitePalabras() const {
     return limitePalabras;
 }
 
+TipoCliente Cliente::getTipoCliente() const {
+    return tipo;
+}
+
 bool Cliente::esGratis() const {
     return tipo == TipoCliente::GRATIS;
 }

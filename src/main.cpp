@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
     }
 
     for (const auto& cliente : clientes) {
-        std::cout << "Cliente " << cliente.getId() << " buscando palabra: " << cliente.getPalabra() << "\n";
+        std::cout << "Cliente " << cliente.getId() << " [" << tipoClienteToString(cliente.getTipoCliente()) << "]" << " buscando palabra: " << cliente.getPalabra() << "\n";
 
         std::vector<Buscador> buscador = CreadorFragmentos::crear(cliente.getId(), nombresLibros, cliente.getPalabra());
 
