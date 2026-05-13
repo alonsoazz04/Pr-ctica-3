@@ -1,7 +1,9 @@
 #include "resultado_busqueda_cliente.hpp"
 #include <iostream>
 #include <fstream>
-#include <iomanip>
+#include <mutex>
+
+extern std::mutex coutMutex;
 
 ResultadoBusquedaCliente::ResultadoBusquedaCliente() {}
 
@@ -22,13 +24,15 @@ std::chrono::milliseconds ResultadoBusquedaCliente::getTiempoTotal() const {
 }
 
 void ResultadoBusquedaCliente::print() const {
+    std::lock_guard<std::mutex> lock(coutMutex);
+
     std::cout << "Resultados encontrados: " << busquedas.size() << std::endl;
     std::cout << "Tiempo total: " << tiempoTotal.count() << " ms" << std::endl;
 
     if (!busquedas.empty()) {
         std::cout << "Libros encontrados: " << std::endl;
         for (const auto& busqueda : busquedas) {
-            std::cout << busqueda.nombreLibro << " (línea " << busqueda.numeroLinea << ", posicion " << busqueda.posicionPalabra <<  ")" << std::endl;
+            std::cout << busqueda.nombreLibro << " (línea " << busqueda.numeroLinea << ", posicion " << busqueda.posicionPalabra << ")" << std::endl;
         }
     }
 }

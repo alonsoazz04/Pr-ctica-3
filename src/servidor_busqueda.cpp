@@ -2,6 +2,8 @@
 #include <iostream>
 #include <chrono>
 
+extern std::mutex coutMutex;
+
 ServidorBusqueda::ServidorBusqueda(unsigned int maxClientesConcurrente, const std::vector<Libro>& libros) : maxClientesConcurrente(maxClientesConcurrente), clientesActivos(0), pararPeticion(false),
 contadorTurnoPremium(0), contadorTurnoGratis(0), buscador(libros) {}
 
@@ -49,14 +51,27 @@ void ServidorBusqueda::enviarCliente(const Cliente& cliente) {
 }
 
 void ServidorBusqueda::procesarCliente(Cliente cliente) {
+    auto inicio = std::chrono::steady_clock::now();
+
     ResultadoBusquedaCliente resultado = buscador.buscar(cliente, servicioPago);
 
-    std::cout << "Cliente " << cliente.getId()
-              << " buscando palabra: " << cliente.getPalabra() << "\n";
+    auto fin = std::chrono::steady_clock::now();
+    resultado.setTiempoTotal(
+        std::chrono::duration_cast<std::chrono::milliseconds>(fin - inicio)
+    );
+
+    {
+        std::lock_guard<std::mutex> lock(coutMutex);
+        std::cout << "Cliente " << cliente.getId()
+                  << " buscando palabra: " << cliente.getPalabra() << "\n";
+    }
 
     resultado.print();
 
-    std::cout << "Finalizado cliente " << cliente.getId() << "\n";
+    {
+        std::lock_guard<std::mutex> lock(coutMutex);
+        std::cout << "Finalizado cliente " << cliente.getId() << "\n";
+    }
 }
 
 void ServidorBusqueda::ejecutar() {

@@ -1,7 +1,8 @@
 #include "servicio_pago.hpp"
 #include <iostream>
-#include <thread>
-#include <chrono>
+#include <mutex>
+
+std::mutex coutMutex;
 
 ServicioPago::ServicioPago() : ocupado(false) {}
 
@@ -14,16 +15,17 @@ void ServicioPago::recargar(Cliente& cliente, int cantidad) {
 
     ocupado = true;
 
-    std::cout << "Procesando pago del cliente " << cliente.getId() << std::endl;
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(300));
+    {
+        std::lock_guard<std::mutex> coutLock(coutMutex);
+        std::cout << "Procesando pago del cliente " << cliente.getId() << std::endl;
+    }
 
     cliente.incrementarSaldo(cantidad);
 
-    std::cout << "Saldo actualizado para el cliente "
-              << cliente.getId()
-              << ". Nuevo saldo: " << cliente.getSaldo()
-              << std::endl;
+    {
+        std::lock_guard<std::mutex> coutLock(coutMutex);
+        std::cout << "Saldo actualizado para el cliente " << cliente.getId() << ". Nuevo saldo: " << cliente.getSaldo() << std::endl;
+    }
 
     ocupado = false;
     lock.unlock();
